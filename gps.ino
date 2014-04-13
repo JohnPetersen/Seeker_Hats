@@ -1,6 +1,9 @@
 #include <Adafruit_GPS.h>
 #include <SoftwareSerial.h>
 
+#define MAX_LONG 2147483647L
+#define BAMS_SCALE 11930464.70555555555556
+
 int gpsTx = 8;
 int gpsRx = 7;
 
@@ -58,6 +61,14 @@ void processGps()
   }
 }
 
+long toBAMS(float v)
+{
+  long degrees = floor(v / 100);
+  float minutes = v - degrees;
+  return ((degrees / 180.0) * MAX_LONG) + ((minutes / (60 * 180.0)) * MAX_LONG);
+  // TODO Maybe factor out the multiplication. If the factored code loses precision don't do it.
+}
+
 void updatePosition()
 {
   Serial.print("\nTime: ");
@@ -81,13 +92,9 @@ void updatePosition()
     Serial.print("Altitude: "); Serial.println(GPS->altitude);
     Serial.print("Satellites: "); Serial.println((int)GPS->satellites);
     
-    Serial1.print("Location: ");
-    Serial1.print(GPS->latitude, 4); Serial1.print(GPS->lat);
-    Serial1.print(", ");
-    Serial1.print(GPS->longitude, 4); Serial1.println(GPS->lon);
-    Serial1.print("Speed (knots): "); Serial1.println(GPS->speed);
-    Serial1.print("Angle: "); Serial1.println(GPS->angle);
-    Serial1.print("Altitude: "); Serial1.println(GPS->altitude);
-    Serial1.print("Satellites: "); Serial1.println((int)GPS->satellites);
+    // convert lat & lon to BAMS
+    long latBAMS = toBAMS(GPS->latitude);
+    long lonBAMS = toBAMS(GPS->longitude);
+    Serial1.print("{0,");Serial1.print(latBAMS);Serial1.print(",");Serial1.print(lonBAMS);Serial1.println("}");
   }
 }
