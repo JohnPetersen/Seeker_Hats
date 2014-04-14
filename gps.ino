@@ -63,9 +63,9 @@ void processGps()
 
 long toBAMS(float v)
 {
-  long degrees = floor(v / 100);
-  float minutes = v - degrees;
-  return ((degrees / 180.0) * MAX_LONG) + ((minutes / (60 * 180.0)) * MAX_LONG);
+  float degrees = floor(v / 100.0);
+  float minutes = v - (degrees * 100);
+  return ((degrees / 180.0) * MAX_LONG) + ((minutes / (60.0 * 180.0)) * MAX_LONG);
   // TODO Maybe factor out the multiplication. If the factored code loses precision don't do it.
 }
 
