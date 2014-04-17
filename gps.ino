@@ -61,16 +61,22 @@ void processGps()
   }
 }
 
-long toBAMS(float v)
+long toBAMS(float v, char d)
 {
   float degrees = floor(v / 100.0);
   float minutes = v - (degrees * 100);
-  return ((degrees / 180.0) * MAX_LONG) + ((minutes / (60.0 * 180.0)) * MAX_LONG);
+  long bams = ((degrees / 180.0) * MAX_LONG) + ((minutes / (60.0 * 180.0)) * MAX_LONG);
+  return d == 'S' || d == 'W' ? -bams : bams;
   // TODO Maybe factor out the multiplication. If the factored code loses precision don't do it.
 }
 
 void updatePosition()
 {
+  // TODO This method is responsible for:
+  // 1. converting the GPS coordinates into BAMS
+  // 2. storing the coordinates locally
+  // 3. sending them to the other device
+  
   Serial.print("\nTime: ");
   Serial.print(GPS->hour, DEC); Serial.print(':');
   Serial.print(GPS->minute, DEC); Serial.print(':');
@@ -93,8 +99,8 @@ void updatePosition()
     Serial.print("Satellites: "); Serial.println((int)GPS->satellites);
     
     // convert lat & lon to BAMS
-    long latBAMS = toBAMS(GPS->latitude);
-    long lonBAMS = toBAMS(GPS->longitude);
+    long latBAMS = toBAMS(GPS->latitude, GPS->lat);
+    long lonBAMS = toBAMS(GPS->longitude, GPS->lon);
     Serial1.print("{0,");Serial1.print(latBAMS);Serial1.print(",");Serial1.print(lonBAMS);Serial1.println("}");
   }
 }

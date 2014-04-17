@@ -1,38 +1,45 @@
 
+#include <TimedAction.h>
+
+TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
+TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
+TimedAction actHeading = TimedAction(250, headingTask);
 
 void setup()
 {
-  // connect at 115200 so we can read the GPS fast enough and echo without dropping chars
-  // also spit it out
-  Serial.begin(115200);
-  Serial.println("Adafruit GPS library basic test!");
-  
+  Serial.begin(115200); // Connected to USB
   Serial1.begin(9600); //This is the UART, pipes to the XBee
 
   setupGps();
   setupCompass();
   setupLights();
 }
-     
 
-
-uint32_t timer = millis();
 void loop() // run over and over again
 {
-  
-  // if millis() or timer wraps around, we'll just reset it
-  if (timer > millis()) timer = millis();
-  
   // read data from the GPS in the 'main loop'
   processGps();
-     
-  // approximately every 2 seconds or so, print out the current stats
-  if (millis() - timer > 2000) {
-    // GPS
-    updatePosition();
-    // Compass
-    updateHeading();
-    
-    timer = millis(); // reset the timer
-  }
+  
+  actUpdatePosition.check();
+  actReceivePosition.check();
+  actHeading.check();
+}
+
+void positionUpdateTask()
+{
+  updatePosition();
+}
+
+void positionReceiveTask()
+{
+  // TODO Need to receive the other's position
+  //receiveOtherPosition();
+}
+
+void headingTask()
+{
+  updateHeading();
+  // TODO update the lights.
+  // 1. calculate the other's sector based on our current and received positions.
+  // 2. if this is a new quadrant update the lights. 
 }
