@@ -25,7 +25,7 @@ namespace WorldState {
   }
 
   void setLong(byte buff[], long l) {
-    buff[0] = (int)(l >> 24) & 0xFF);
+    buff[0] = (int)((l >> 24) & 0xFF);
     buff[1] = (int)((l >> 16) & 0xFF);
     buff[2] = (int)((l >> 8) & 0XFF);
     buff[3] = (int)((l & 0XFF));
