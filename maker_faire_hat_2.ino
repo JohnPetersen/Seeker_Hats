@@ -5,11 +5,15 @@
 #include <Wire.h>
 #include <TimedAction.h>
 
+#include <debug_utils.h>
+#include <Adafruit_GPS.h>
+#include <SoftwareSerial.h>
+
 #include <Adafruit_LSM303.h>
 #include <Adafruit_NeoPixel.h>
 
 #include "WorldState.h"
-#include "gps.h"
+#include "GPS_Wrapper.h"
 
 #define PIN_LIGHTS 5
 
@@ -158,12 +162,21 @@ TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
 TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
 TimedAction actHeading = TimedAction(250, headingTask);
 
+GPS_Wrapper* gpsSensor;
+WorldState* myState;
+WorldState* otherState;
+
 void setup()
 {
   INIT_DEBUG();
   Serial1.begin(9600); //This is the UART, pipes to the XBee
 
-  gps::setupGps();
+  myState = new WorldState();
+  otherState = new WorldState();
+
+  gpsSensor = new GPS_Wrapper(myState);
+  gpsSensor->begin();
+  
   Compass::setupCompass();
   Lights::setupLights();
   DEBUG_PRINT("Setup Complete!");
@@ -172,7 +185,7 @@ void setup()
 void loop() // run over and over again
 {
   // read data from the GPS in the 'main loop'
-  gps::processGps();
+  gpsSensor->processGps();
   
   actUpdatePosition.check();
   actReceivePosition.check();
@@ -182,7 +195,7 @@ void loop() // run over and over again
 void positionUpdateTask()
 {
   // read my position from GPS, update the state, and transmit it to the other.
-  gps::updatePosition();
+  gpsSensor->updatePosition();
 }
 
 void positionReceiveTask()
@@ -200,13 +213,14 @@ void headingTask()
 }
 
 void receiveMessage() {
+  // Receive message from other device
   byte buff[MSG_LEN] = { 0 };
   long tmpLat = 0;
   long tmpLon = 0;
   if (Serial1.available() > 0) {
     // TODO check the number of bytes read...
-    Serial.readBytes((char*)buff, MSG_LEN);
-    WorldState::set(buff, &WorldState::other);
+    Serial1.readBytes((char*)buff, MSG_LEN);
+    otherState->update(buff);
   }
 }
 
