@@ -14,23 +14,8 @@
 
 #include "WorldState.h"
 #include "GPS_Wrapper.h"
+#include "Lights.h"
 
-#define PIN_LIGHTS 5
-
-
-
-namespace Lights
-{
-  Adafruit_NeoPixel strip = Adafruit_NeoPixel(3, PIN_LIGHTS, NEO_GRB + NEO_KHZ800);
-  
-  void setupLights()
-  { 
-  //  strip.begin();
-  //  strip.show(); // Initialize all pixels to 'off'
-  
-    DEBUG_PRINT("Lights Setup Complete!");
-  }
-} // end Lights
 
 namespace Compass
 {
@@ -163,6 +148,7 @@ TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
 TimedAction actHeading = TimedAction(250, headingTask);
 
 GPS_Wrapper* gpsSensor;
+Lights* lights;
 WorldState* myState;
 WorldState* otherState;
 
@@ -178,7 +164,10 @@ void setup()
   gpsSensor->begin();
   
   Compass::setupCompass();
-  Lights::setupLights();
+  
+  lights = new Lights(myState, otherState);
+  lights->begin();
+  
   DEBUG_PRINT("Setup Complete!");
 }
 
