@@ -6,6 +6,8 @@ WorldState::WorldState()
 {
   lat = lon = 0;
   alarm = 0;
+  lastUpdateTime = 0;
+  heading = 0.0;
 }
 
 long WorldState::getLong(byte buff[])

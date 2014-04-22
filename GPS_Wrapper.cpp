@@ -95,6 +95,7 @@
       // 2. update the state
       myState->lat = latBAMS;
       myState->lon = lonBAMS;
+      myState->lastUpdateTime = millis();
       
       // 3. send position to the other
       Serial1.write(myState->getMessage(), MSG_LEN);

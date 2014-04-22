@@ -13,6 +13,8 @@ class WorldState
     byte alarm;
     long lat;
     long lon;
+    unsigned long lastUpdateTime;
+    float heading;
     
     WorldState();
     
