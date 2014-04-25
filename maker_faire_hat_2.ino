@@ -1,6 +1,4 @@
 
-#include <debug_utils.h>
-
 #include <Wire.h>
 #include <TimedAction.h>
 
@@ -9,6 +7,8 @@
 #include <Adafruit_LSM303.h>
 #include <Adafruit_NeoPixel.h>
 
+#include "debug_utils.h"
+#include "Sector.h"
 #include "WorldState.h"
 #include "GPS_Wrapper.h"
 #include "Compass.h"
@@ -18,6 +18,7 @@ TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
 TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
 TimedAction actHeading = TimedAction(250, headingTask);
 
+Sector* sector;
 GPS_Wrapper* gpsSensor;
 Compass* compass;
 Lights* lights;
@@ -40,6 +41,8 @@ void setup()
   
   lights = new Lights(myState, otherState);
   lights->begin();
+
+  sector = new Sector(myState, otherState);
   
   DEBUG_PRINT("Setup Complete!");
 }
@@ -71,20 +74,10 @@ void headingTask()
   compass->update();
   // TODO update the lights.
   // 1. calculate the other's sector based on our current and received positions.
-  int sector = calcSector();
-  // 2. if this is a new quadrant update the lights. 
-  lights->update();
-}
-
-int calcSector()
-{
-  // TODO use the lat-lon from the two WorldStates and the heading to determine 
-  //   which sector the other device is in.
-  //   Debounce the sector...
-
-  float a = atan2(1, 0);
-
-  return floor(a);
+  
+  // 2. if this is a new quadrant update the lights.
+  byte currSector = sector->getCurrent(); 
+  lights->setSector(currSector);
 }
 
 void receiveMessage() {

@@ -1,9 +1,8 @@
 #ifndef _COMPASS_H
 #define _COMPASS_H
 
-#include <debug_utils.h>
+#include "debug_utils.h"
 #include <Adafruit_LSM303.h>
-
 #include "WorldState.h"
 
 class Compass

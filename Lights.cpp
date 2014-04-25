@@ -9,14 +9,15 @@ Lights::Lights(WorldState* ms, WorldState* os)
 
 void Lights::begin(void)
 {
-  // TODO init the LED strip
+  // init the LED strip
   //  strip.begin();
   //  strip.show(); // Initialize all pixels to 'off'
   DEBUG_PRINT("Lights Setup Complete!");
 }
 
-void Lights::update(void)
+void Lights::setSector(byte s)
 {
   // TODO update the light status based on the current states.
+  sector = s;
 }
 

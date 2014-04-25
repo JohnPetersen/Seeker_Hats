@@ -1,7 +1,5 @@
 #include "WorldState.h"
 
-// TODO test the conversion to and from the byte array
-
 WorldState::WorldState()
 {
   lat = lon = 0;

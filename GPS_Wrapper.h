@@ -1,7 +1,7 @@
 #ifndef _GPS_WRAPPER_H
 #define _GPS_WRAPPER_H
 
-#include <debug_utils.h>
+#include "debug_utils.h"
 #include <Adafruit_GPS.h>
 
 #include "WorldState.h"
