@@ -1,11 +1,9 @@
 
-#define DEBUG
 #include <debug_utils.h>
 
 #include <Wire.h>
 #include <TimedAction.h>
 
-#include <debug_utils.h>
 #include <Adafruit_GPS.h>
 #include <SoftwareSerial.h>
 #include <Adafruit_LSM303.h>
@@ -73,7 +71,20 @@ void headingTask()
   compass->update();
   // TODO update the lights.
   // 1. calculate the other's sector based on our current and received positions.
+  int sector = calcSector();
   // 2. if this is a new quadrant update the lights. 
+  lights->update();
+}
+
+int calcSector()
+{
+  // TODO use the lat-lon from the two WorldStates and the heading to determine 
+  //   which sector the other device is in.
+  //   Debounce the sector...
+
+  float a = atan2(1, 0);
+
+  return floor(a);
 }
 
 void receiveMessage() {
@@ -85,6 +96,7 @@ void receiveMessage() {
     // TODO check the number of bytes read...
     Serial1.readBytes((char*)buff, MSG_LEN);
     otherState->update(buff);
+    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");DBPRINT(otherState->lat);DBPRINT(",");DBPRINT(otherState->lon);
   }
 }
 

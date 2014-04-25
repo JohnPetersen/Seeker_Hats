@@ -26,7 +26,16 @@
     //GPS->sendCommand(PGCMD_ANTENNA);
    
     // TODO Turn on logging.
-   
+    DBPRINTLN("STARTING LOGGING....");
+    if (GPS->LOCUS_StartLogger())
+    {  
+      DBPRINTLN(" STARTED!");
+    } 
+    else
+    {
+      DBPRINTLN(" no response :(");
+    }
+
     delay(1000);
     // Ask for firmware version
     GPS->sendCommand(PMTK_Q_RELEASE);
@@ -57,7 +66,6 @@
     float minutes = v - (degrees * 100);
     long bams = ((degrees / 180.0) * MAX_LONG) + ((minutes / (60.0 * 180.0)) * MAX_LONG);
     return d == 'S' || d == 'W' ? -bams : bams;
-    // TODO Maybe factor out the multiplication. If the factored code loses precision don't do it.
   }
   
   void GPS_Wrapper::updatePosition()
@@ -67,6 +75,7 @@
     // 2. storing the coordinates locally
     // 3. sending them to the other device
     
+#ifdef DEBUG
     DBPRINT("\nTime: ");
     DBPRINT(GPS->hour); DBPRINT(':');
     DBPRINT(GPS->minute); DBPRINT(':');
@@ -77,17 +86,19 @@
     DBPRINT(GPS->month); DBPRINT("/20");
     DBPRINTLN(GPS->year);
     DBPRINT("Fix: "); DBPRINT((int)GPS->fix);
-    Serial.print(" quality: "); Serial.println((int)GPS->fixquality);
+    DBPRINT(" quality: "); DBPRINTLN((int)GPS->fixquality);
+#endif    
     if (GPS->fix) {
-      Serial.print("Location: ");
-      Serial.print(GPS->latitude, 4); Serial.print(GPS->lat);
-      Serial.print(", ");
-      Serial.print(GPS->longitude, 4); Serial.println(GPS->lon);
-      Serial.print("Speed (knots): "); Serial.println(GPS->speed);
-      Serial.print("Angle: "); Serial.println(GPS->angle);
-      Serial.print("Altitude: "); Serial.println(GPS->altitude);
-      Serial.print("Satellites: "); Serial.println((int)GPS->satellites);
-      
+#ifdef DEBUG
+      DBPRINT("Location: ");
+      DBPRINT(GPS->latitude); DBPRINT(GPS->lat);
+      DBPRINT(", ");
+      DBPRINT(GPS->longitude); DBPRINTLN(GPS->lon);
+      DBPRINT("Speed (knots): "); DBPRINTLN(GPS->speed);
+      DBPRINT("Angle: "); DBPRINTLN(GPS->angle);
+      DBPRINT("Altitude: "); DBPRINTLN(GPS->altitude);
+      DBPRINT("Satellites: "); DBPRINTLN((int)GPS->satellites);
+#endif
       // 1. convert lat & lon to BAMS
       long latBAMS = toBAMS(GPS->latitude, GPS->lat);
       long lonBAMS = toBAMS(GPS->longitude, GPS->lon);
@@ -99,7 +110,7 @@
       
       // 3. send position to the other
       Serial1.write(myState->getMessage(), MSG_LEN);
-      //Serial1.print("{0,");Serial1.print(latBAMS);Serial1.print(",");Serial1.print(lonBAMS);Serial1.println("}");
+      DBPRINT("{");DBPRINT(myState->alarm);DBPRINT(",");DBPRINT(latBAMS);DBPRINT(",");DBPRINT(lonBAMS);DBPRINTLN("}");
     }
   }
 
