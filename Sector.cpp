@@ -8,7 +8,10 @@ Sector::Sector(WorldState* ms, WorldState* os)
 
 byte Sector::getCurrent()
 {
-  return smooth(calculate());
+  if (myState->isFixFlagSet() && otherState->isFixFlagSet())
+    return smooth(calculate());
+  else
+    return ERROR_SECTOR;
 }
 
 byte Sector::calculate()

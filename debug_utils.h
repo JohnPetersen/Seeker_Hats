@@ -1,7 +1,7 @@
 #ifndef DEBUG_UTILS_H
 #define DEBUG_UTILS_H
 
-//#define DEBUG
+#define DEBUG
 
 #ifdef DEBUG
 #define INIT_DEBUG() Serial.begin(115200);

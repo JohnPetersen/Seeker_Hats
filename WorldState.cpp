@@ -1,5 +1,9 @@
 #include "WorldState.h"
 
+#define BTN_FLAG_MASK 0x01
+#define ACK_FLAG_MASK 0x02
+#define FIX_FLAG_MASK 0x10
+
 WorldState::WorldState()
 {
   lat = lon = 0;
@@ -42,4 +46,43 @@ boolean WorldState::update(byte buff[])
   lat = getLong(buff + 2);
   lon = getLong(buff + 6);
   return true;
+}
+
+void WorldState::setButtonFlag(bool b)
+{
+  if (b)
+    alarm |= BTN_FLAG_MASK;
+  else
+    alarm &= ~BTN_FLAG_MASK;
+}
+
+void WorldState::setAckFlag(bool b)
+{
+  if (b)
+    alarm |= ACK_FLAG_MASK;
+  else
+    alarm &= ~ACK_FLAG_MASK;
+}
+
+void WorldState::setFixFlag(bool b)
+{
+  if (b)
+    alarm |= FIX_FLAG_MASK;
+  else
+    alarm &= ~FIX_FLAG_MASK; 
+}
+
+bool WorldState::isButtonFlagSet()
+{
+  return (alarm & BTN_FLAG_MASK) > 0;
+}
+
+bool WorldState::isAckFlagSet()
+{
+  return (alarm & ACK_FLAG_MASK) > 0;
+}
+
+bool WorldState::isFixFlagSet()
+{
+  return (alarm & FIX_FLAG_MASK) > 0;
 }

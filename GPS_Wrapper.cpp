@@ -107,10 +107,13 @@
       myState->lat = latBAMS;
       myState->lon = lonBAMS;
       myState->lastUpdateTime = millis();
-      
-      // 3. send position to the other
-      Serial1.write(myState->getMessage(), MSG_LEN);
-      DBPRINT("{");DBPRINT(myState->alarm);DBPRINT(",");DBPRINT(latBAMS);DBPRINT(",");DBPRINT(lonBAMS);DBPRINTLN("}");
+      myState->setFixFlag(true);  
     }
+    else
+    {
+      myState->setFixFlag(false);
+    }
+    // 3. send position to the other
+    Serial1.write(myState->getMessage(), MSG_LEN);
+    DBPRINT("Sending {");DBPRINT(myState->alarm);DBPRINT(",");DBPRINT(myState->lat);DBPRINT(",");DBPRINT(myState->lon);DBPRINTLN("}");
   }
-

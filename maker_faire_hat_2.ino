@@ -14,8 +14,11 @@
 #include "Compass.h"
 #include "Lights.h"
 
+#define BUTTON_INTERRUPT 4
+#define DEBOUNCE_TIME 500
+
 TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
-TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
+TimedAction actReceivePosition = TimedAction(1000, receiveOtherStateTask);
 TimedAction actHeading = TimedAction(250, headingTask);
 
 Sector* sector;
@@ -24,6 +27,9 @@ Compass* compass;
 Lights* lights;
 WorldState* myState;
 WorldState* otherState;
+
+volatile bool buttonPushed = false;
+volatile long nextPushAllowedTime = 0;
 
 void setup()
 {
@@ -44,6 +50,8 @@ void setup()
 
   sector = new Sector(myState, otherState);
   
+  attachInterrupt(BUTTON_INTERRUPT, buttonHandler, RISING);
+
   DEBUG_PRINT("Setup Complete!");
 }
 
@@ -52,6 +60,18 @@ void loop() // run over and over again
   // read data from the GPS in the 'main loop'
   gpsSensor->processGps();
   
+  // check for button pushes
+  if (buttonPushed) {
+    DBPRINTLN("Button PUSH");
+    // this button press was an ack if the other had already pushed their button
+    if (otherState->isButtonFlagSet() && !myState->isAckFlagSet())
+      myState->setAckFlag(true);
+    else
+      myState->setButtonFlag(true);
+    
+    buttonPushed = false;
+  }
+
   actUpdatePosition.check();
   actReceivePosition.check();
   actHeading.check();
@@ -63,10 +83,22 @@ void positionUpdateTask()
   gpsSensor->updatePosition();
 }
 
-void positionReceiveTask()
+void receiveOtherStateTask()
 {
   // receive the other's position and update the state
-  receiveMessage();
+  if (Serial1.available() > 0) {
+    bool isOtherAlarmed = otherState->isButtonFlagSet();
+    byte buff[MSG_LEN] = { 0 };
+    // TODO check the number of bytes read...
+    Serial1.readBytes((char*)buff, MSG_LEN);
+    otherState->update(buff);
+    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");DBPRINT(otherState->lat);DBPRINT(",");DBPRINT(otherState->lon);
+    
+    if (isOtherAlarmed && !otherState->isButtonFlagSet())
+      myState->setAckFlag(false);
+    if (otherState->isAckFlagSet())
+      myState->setButtonFlag(false);
+  }
 }
 
 void headingTask()
@@ -80,16 +112,9 @@ void headingTask()
   lights->setSector(currSector);
 }
 
-void receiveMessage() {
-  // Receive message from other device
-  byte buff[MSG_LEN] = { 0 };
-  long tmpLat = 0;
-  long tmpLon = 0;
-  if (Serial1.available() > 0) {
-    // TODO check the number of bytes read...
-    Serial1.readBytes((char*)buff, MSG_LEN);
-    otherState->update(buff);
-    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");DBPRINT(otherState->lat);DBPRINT(",");DBPRINT(otherState->lon);
+void buttonHandler() {
+  if (millis() > nextPushAllowedTime) {
+    buttonPushed = true;
+    nextPushAllowedTime = millis() + DEBOUNCE_TIME;
   }
 }
-
