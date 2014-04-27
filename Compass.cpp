@@ -1,19 +1,10 @@
+#include "Compass.h"
 
-#include <Wire.h>
-#include <Adafruit_LSM303.h>
-
-Adafruit_LSM303 compass;
-
-Adafruit_LSM303::lsm303MagData calMin;
-Adafruit_LSM303::lsm303MagData calMax;
-
-void setupCompass()
+Compass::Compass(WorldState* ms)
 {
-    if (!compass.begin())
-  {
-    Serial.println("Oops ... unable to initialize the compass. Check your wiring!");
-    while (1);
-  }
+  myState = ms;
+  compass = new Adafruit_LSM303();
+  
   // TODO set actual compass callibration values depending on the device.
   calMin.x = 0.0;
   calMin.y = 0.0;
@@ -21,6 +12,17 @@ void setupCompass()
   calMax.x = 0.0;
   calMax.y = 0.0;
   calMax.z = 0.0;
+}
+
+void Compass::begin()
+{
+  if (!compass->begin())
+  {
+    DBPRINTLN("Oops ... unable to initialize the compass. Check your wiring!");
+    while (1);
+  }
+  
+  DEBUG_PRINT("Compass Setup Complete!");
 }
 
 template <typename T> struct vector
@@ -61,14 +63,14 @@ form a basis for the horizontal plane. The From vector is projected
 into the horizontal plane and the angle between the projected vector
 and horizontal north is returned.
 */
-float getHeading()
+float Compass::getHeading()
 {
   vector<int> from = (vector<int>){0, -1, 0};
   
-  compass.read();
+  compass->read();
   
-  vector<int32_t> temp_m = {compass.magData.x, compass.magData.y, compass.magData.z};
-  vector<int32_t> temp_a = {compass.accelData.x, compass.accelData.y, compass.accelData.z};
+  vector<int32_t> temp_m = {compass->magData.x, compass->magData.y, compass->magData.z};
+  vector<int32_t> temp_a = {compass->accelData.x, compass->accelData.y, compass->accelData.z};
 
 
   // subtract offset (average of min and max) from magnetometer readings
@@ -90,31 +92,16 @@ float getHeading()
   return heading;
 }
 
-char* headingToCompassPoint(float h)
+void Compass::update()
 {
-  if (h > 337.5 || h <= 22.5)
-    return " N";
-  if (h > 22.5 && h <= 67.5)
-    return "NE";
-  if (h > 67.5 && h <= 112.5)
-    return " E";
-  if (h > 112.5 && h <= 157.5)
-    return "SE";
-  if (h > 157.5 && h <= 202.5)
-    return " S";
-  if (h > 202.5 && h <= 247.5)
-    return "SW";
-  if (h > 247.5 && h <= 292.5)
-    return " W";
-  if (h > 292.5 && h <= 337.5)
-    return "NW";
-}
-
-void updateHeading()
-{ 
+  // TODO 1. read current heading
+  //      2. Calculate which sector the other is in
+  //      3. Use a two vote state machine to debounce changes in sectors
+  //      4. Update the lights
   float heading = getHeading();
-  char* compassPoint = headingToCompassPoint(heading);
-  Serial.print("Heading: "); Serial.print(compassPoint); Serial.print(" : "); Serial.println(heading);
-  Serial1.print("Heading: "); Serial1.print(compassPoint); Serial1.print(" : "); Serial1.println(heading);
+  myState->heading = heading;
+//  char* compassPoint = headingToCompassPoint(heading);
+//  Serial.print("Heading: "); Serial.print(compassPoint); Serial.print(" : "); Serial.println(heading);
+//  Serial1.print("Heading: "); Serial1.print(compassPoint); Serial1.print(" : "); Serial1.println(heading);
 }
 

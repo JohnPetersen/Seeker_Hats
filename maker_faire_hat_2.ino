@@ -1,72 +1,77 @@
+
+#include <Wire.h>
 #include <TimedAction.h>
 
-#define MSG_LEN 11
-#define MSG_TAG 0xff
-#define MSG_END 0x00
+#include <Adafruit_GPS.h>
+#include <SoftwareSerial.h>
+#include <Adafruit_LSM303.h>
+#include <Adafruit_NeoPixel.h>
 
-namespace WorldState {
-  struct State {
-    byte alarm;
-    long lat;
-    long lon;
-  };
-  
-  State my = { 0, 0, 0 };
-  State other = { 0, 0, 0 };
-  
-  // TODO test the conversion to and from the byte array
-  
-  long getLong(byte buff[]) {
-    long l = buff[0];
-    l = l << 8 | buff[1];
-    l = l << 8 | buff[2];
-    l = l << 8 | buff[3];
-    return l;
-  }
+#include "debug_utils.h"
+#include "Sector.h"
+#include "WorldState.h"
+#include "GPS_Wrapper.h"
+#include "Compass.h"
+#include "Lights.h"
 
-  void setLong(byte buff[], long l) {
-    buff[0] = (int)((l >> 24) & 0xFF);
-    buff[1] = (int)((l >> 16) & 0xFF);
-    buff[2] = (int)((l >> 8) & 0XFF);
-    buff[3] = (int)((l & 0XFF));
-  }
-  
-  void get(byte buff[], State* s) {
-    buff[0] = MSG_TAG;
-    buff[1] = s->alarm;
-    setLong(buff + 2, s->lat);
-    setLong(buff + 6, s->lon);
-    buff[10] = MSG_END;
-  }
-  
-  boolean set(byte buff[], State* s) {
-    if (buff[0] != MSG_TAG) return false;
-    s->alarm = buff[1];
-    s->lat = getLong(buff + 2);
-    s->lon = getLong(buff + 6);
-    return true;
-  }
-}
+#define BUTTON_INTERRUPT 4
+#define DEBOUNCE_TIME 500
 
 TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
-TimedAction actReceivePosition = TimedAction(1000, positionReceiveTask);
+TimedAction actReceivePosition = TimedAction(1000, receiveOtherStateTask);
 TimedAction actHeading = TimedAction(250, headingTask);
+
+Sector* sector;
+GPS_Wrapper* gpsSensor;
+Compass* compass;
+Lights* lights;
+WorldState* myState;
+WorldState* otherState;
+
+volatile bool buttonPushed = false;
+volatile long nextPushAllowedTime = 0;
 
 void setup()
 {
-  Serial.begin(115200); // Connected to USB
+  INIT_DEBUG();
   Serial1.begin(9600); //This is the UART, pipes to the XBee
 
-  setupGps();
-  setupCompass();
-  setupLights();
+  myState = new WorldState();
+  otherState = new WorldState();
+
+  gpsSensor = new GPS_Wrapper(myState);
+  gpsSensor->begin();
+  
+  compass = new Compass(myState);
+  compass->begin();
+  
+  lights = new Lights(myState, otherState);
+  lights->begin();
+
+  sector = new Sector(myState, otherState);
+  
+  attachInterrupt(BUTTON_INTERRUPT, buttonHandler, RISING);
+
+  DEBUG_PRINT("Setup Complete!");
 }
 
 void loop() // run over and over again
 {
   // read data from the GPS in the 'main loop'
-  processGps();
+  gpsSensor->processGps();
   
+  // check for button pushes
+  if (buttonPushed) {
+    DBPRINTLN("Button PUSH");
+    // this button press was an ack if the other had already pushed their button
+    if (otherState->isButtonFlagSet() && !myState->isAckFlagSet())
+      myState->setAckFlag(true);
+    else
+      myState->setButtonFlag(true);
+    
+    buttonPushed = false;
+  }
+
   actUpdatePosition.check();
   actReceivePosition.check();
   actHeading.check();
@@ -75,31 +80,41 @@ void loop() // run over and over again
 void positionUpdateTask()
 {
   // read my position from GPS, update the state, and transmit it to the other.
-  updatePosition();
+  gpsSensor->updatePosition();
 }
 
-void positionReceiveTask()
+void receiveOtherStateTask()
 {
   // receive the other's position and update the state
-  receiveMessage();
+  if (Serial1.available() > 0) {
+    bool isOtherAlarmed = otherState->isButtonFlagSet();
+    byte buff[MSG_LEN] = { 0 };
+    // TODO check the number of bytes read...
+    Serial1.readBytes((char*)buff, MSG_LEN);
+    otherState->update(buff);
+    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");DBPRINT(otherState->lat);DBPRINT(",");DBPRINT(otherState->lon);
+    
+    if (isOtherAlarmed && !otherState->isButtonFlagSet())
+      myState->setAckFlag(false);
+    if (otherState->isAckFlagSet())
+      myState->setButtonFlag(false);
+  }
 }
 
 void headingTask()
 {
-  updateHeading();
+  compass->update();
   // TODO update the lights.
   // 1. calculate the other's sector based on our current and received positions.
-  // 2. if this is a new quadrant update the lights. 
+  
+  // 2. if this is a new quadrant update the lights.
+  byte currSector = sector->getCurrent(); 
+  lights->setSector(currSector);
 }
 
-void receiveMessage() {
-  byte buff[MSG_LEN] = { 0 };
-  long tmpLat = 0;
-  long tmpLon = 0;
-  if (Serial1.available() > 0) {
-    // TODO check the number of bytes read...
-    Serial.readBytes((char*)buff, MSG_LEN);
-    WorldState::set(buff, &WorldState::other);
+void buttonHandler() {
+  if (millis() > nextPushAllowedTime) {
+    buttonPushed = true;
+    nextPushAllowedTime = millis() + DEBOUNCE_TIME;
   }
 }
-
