@@ -32,19 +32,19 @@ byte Sector::calculate()
 
   byte sctr = ERROR_SECTOR;
   if (a < -90)
-    sctr = -3;
-  else if (a < -45 && a >= -90)
-    sctr = -2;
-  else if (a < -10 && a >= -45)
-    sctr = -1;
-  else if (a < 10 && a >= -10)
     sctr = 0;
-  else if (a < 45 && a >= 10)
+  else if (a < -45 && a >= -90)
     sctr = 1;
-  else if (a < 90 && a >= 45)
+  else if (a < -10 && a >= -45)
     sctr = 2;
-  else if (a >= 90)
+  else if (a < 10 && a >= -10)
     sctr = 3;
+  else if (a < 45 && a >= 10)
+    sctr = 4;
+  else if (a < 90 && a >= 45)
+    sctr = 5;
+  else if (a >= 90)
+    sctr = 6;
 
   return sctr;
 }

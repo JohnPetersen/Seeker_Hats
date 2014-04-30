@@ -7,7 +7,7 @@
 #include "WorldState.h"
 
 #define PIN_GPS_TX 8
-#define PIN_GPS_RX 7
+#define PIN_GPS_RX 9
 
 #define MAX_LONG 2147483647L
 

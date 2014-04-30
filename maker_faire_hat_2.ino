@@ -33,23 +33,30 @@ volatile long nextPushAllowedTime = 0;
 
 void setup()
 {
+  delay(10000);
   INIT_DEBUG();
   Serial1.begin(9600); //This is the UART, pipes to the XBee
 
+  DBPRINTLN("Init WorldState...");
   myState = new WorldState();
   otherState = new WorldState();
 
+  DBPRINTLN("Init GPS_Wrapper...");
   gpsSensor = new GPS_Wrapper(myState);
   gpsSensor->begin();
   
+  DBPRINTLN("Init Compass...");
   compass = new Compass(myState);
   compass->begin();
   
+  DBPRINTLN("Init Lights...");
   lights = new Lights(myState, otherState);
   lights->begin();
 
+  DBPRINTLN("Init Sector...");
   sector = new Sector(myState, otherState);
   
+  DBPRINTLN("Init button interrupt...");
   attachInterrupt(BUTTON_INTERRUPT, buttonHandler, RISING);
 
   DEBUG_PRINT("Setup Complete!");
@@ -75,6 +82,8 @@ void loop() // run over and over again
   actUpdatePosition.check();
   actReceivePosition.check();
   actHeading.check();
+
+  lights->update();
 }
 
 void positionUpdateTask()
@@ -92,7 +101,8 @@ void receiveOtherStateTask()
     // TODO check the number of bytes read...
     Serial1.readBytes((char*)buff, MSG_LEN);
     otherState->update(buff);
-    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");DBPRINT(otherState->lat);DBPRINT(",");DBPRINT(otherState->lon);
+    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");
+    DBPRINT(otherState->lat);DBPRINT(",");DBPRINTLN(otherState->lon);
     
     if (isOtherAlarmed && !otherState->isButtonFlagSet())
       myState->setAckFlag(false);
@@ -108,8 +118,9 @@ void headingTask()
   // 1. calculate the other's sector based on our current and received positions.
   
   // 2. if this is a new quadrant update the lights.
-  byte currSector = sector->getCurrent(); 
-  lights->setSector(currSector);
+  byte currSector = sector->getCurrent();
+  if (currSector != ERROR_SECTOR)
+    lights->setSector(currSector);
 }
 
 void buttonHandler() {

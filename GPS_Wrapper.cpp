@@ -25,20 +25,20 @@
     // Request updates on antenna status, comment out to keep quiet
     //GPS->sendCommand(PGCMD_ANTENNA);
    
-    // TODO Turn on logging.
-    DBPRINTLN("STARTING LOGGING....");
-    if (GPS->LOCUS_StartLogger())
-    {  
-      DBPRINTLN(" STARTED!");
-    } 
-    else
-    {
-      DBPRINTLN(" no response :(");
-    }
+    // Turn on logging.
+    // DBPRINTLN("STARTING LOGGING....");
+    // if (GPS->LOCUS_StartLogger())
+    // {  
+    //   DBPRINTLN(" STARTED!");
+    // } 
+    // else
+    // {
+    //   DBPRINTLN(" no response :(");
+    // }
 
     delay(1000);
     // Ask for firmware version
-    GPS->sendCommand(PMTK_Q_RELEASE);
+    //GPS->sendCommand(PMTK_Q_RELEASE);
     
     DEBUG_PRINT("GPS Setup Complete!");
   }
