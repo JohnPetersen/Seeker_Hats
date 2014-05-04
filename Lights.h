@@ -23,7 +23,8 @@ class Lights
     WorldState* myState;
     WorldState* otherState;
     Adafruit_NeoPixel* strip;
-    byte sector;
+    short sector;
+    bool sectorUpdated;
     unsigned long currentColor;
     unsigned long red;
     unsigned long green;
