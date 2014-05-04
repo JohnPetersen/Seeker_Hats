@@ -7,7 +7,9 @@
 #include "WorldState.h"
 
 #define PIN_LIGHTS 5
-#define SECTOR_COUNT 7
+#define SECTOR_COUNT 5
+
+#define SCAN_DELAY_MS 250
 
 class Lights
 {
@@ -26,6 +28,7 @@ class Lights
     unsigned long red;
     unsigned long green;
     unsigned long blue;
+    long scannerUpdateTime;
 };
 
 #endif

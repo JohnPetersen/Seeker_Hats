@@ -6,6 +6,7 @@
 
 #define RAD2DEG 57.2957795
 #define ERROR_SECTOR 99
+#define SECTOR_COUNT 5
 
 class Sector
 {

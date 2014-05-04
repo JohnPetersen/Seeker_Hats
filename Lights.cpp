@@ -9,6 +9,7 @@ Lights::Lights(WorldState* ms, WorldState* os)
   red = strip->Color(255,0,0);
   green = strip->Color(0,255,0);
   blue = strip->Color(0,0,255);
+  scannerUpdateTime = 0;
 }
 
 void Lights::begin(void)
@@ -64,7 +65,7 @@ void Lights::update()
     strip->setPixelColor(sector, currentColor);
     DBPRINT(sector);
   }
-  else
+  else if (millis() > scannerUpdateTime)
   {
     // Missing one or both fixes, display a larson scanner
     if (sector < 0)
@@ -82,6 +83,8 @@ void Lights::update()
     sector++;
     if (sector == SECTOR_COUNT)
       sector = -(SECTOR_COUNT-1);
+
+    scannerUpdateTime = millis() + SCAN_DELAY_MS;
   }
   DBPRINT(", ");DBPRINTLN(currentColor);
   strip->show();
