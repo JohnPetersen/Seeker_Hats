@@ -6,7 +6,7 @@
 
 #include "WorldState.h"
 
-#define PIN_LIGHTS 5
+#define PIN_LIGHTS 11
 #define SECTOR_COUNT 5
 
 #define SCAN_DELAY_MS 250
@@ -19,7 +19,7 @@ class Lights
     void setSector(byte s);
     void update(void);
   private:
-  	void blank(void);
+  	void setPixel(short n, unsigned long color);
     WorldState* myState;
     WorldState* otherState;
     Adafruit_NeoPixel* strip;

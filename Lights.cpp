@@ -70,43 +70,43 @@ void Lights::update()
   {
     if (sectorUpdated) {
       sectorUpdated = false;
-      blank();
       // We have good fixes, display the pointer
-      strip->setPixelColor(sector, currentColor);
+      setPixel(sector, currentColor);
       DBPRINT("LIGHT: ");DBPRINT(sector);DBPRINT("(fixed), ");DBPRINTLN(currentColor);
-      strip->show();
     }
   }
   else if (millis() > scannerUpdateTime)
   {
     DBPRINT("LIGHT: ");
-    blank();
     // Missing one or both fixes, display a larson scanner
     if (sector >= SECTOR_COUNT)
       sector = -(SECTOR_COUNT-2);
     if (sector < 0)
     {
       // moving left
-      strip->setPixelColor(abs(sector), currentColor);
+      setPixel(abs(sector), currentColor);
       DBPRINT(abs(sector));DBPRINT("(left)");
     }
     else
     {
       // moving right
-      strip->setPixelColor(sector, currentColor);
+      setPixel(sector, currentColor);
       DBPRINT(sector);DBPRINT("(right)");
     }
     sector++;
     DBPRINT(", ");DBPRINTLN(currentColor);
-    strip->show();
     scannerUpdateTime = millis() + SCAN_DELAY_MS;
   }
 }
 
-void Lights::blank()
+void Lights::setPixel(short n, unsigned long color)
 {
-  for (int i = 0; i < SECTOR_COUNT; i++)
+  for (short i = 0; i < SECTOR_COUNT; i++)
   {
-    strip->setPixelColor(i, 0);
+    if (i == n)
+      strip->setPixelColor(i, color);
+    else
+      strip->setPixelColor(i, 0);
   }
+  strip->show();
 }
