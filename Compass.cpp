@@ -94,14 +94,8 @@ float Compass::getHeading()
 
 void Compass::update()
 {
-  // TODO 1. read current heading
-  //      2. Calculate which sector the other is in
-  //      3. Use a two vote state machine to debounce changes in sectors
-  //      4. Update the lights
+  // Read current heading
   float heading = getHeading();
   myState->heading = heading;
-//  char* compassPoint = headingToCompassPoint(heading);
-//  Serial.print("Heading: "); Serial.print(compassPoint); Serial.print(" : "); Serial.println(heading);
-//  Serial1.print("Heading: "); Serial1.print(compassPoint); Serial1.print(" : "); Serial1.println(heading);
 }
 

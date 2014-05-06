@@ -28,6 +28,8 @@ byte Sector::calculate()
   a = -(a - 90.0);
   if (a < -180.0)
     a += 360.0;
+  if (a > 180.0)
+    a -= 360.0;
 
   DBPRINT("   relative to my heading: ");DBPRINTLN(a);
 

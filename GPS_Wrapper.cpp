@@ -94,10 +94,6 @@
       DBPRINT(GPS->latitude); DBPRINT(GPS->lat);
       DBPRINT(", ");
       DBPRINT(GPS->longitude); DBPRINTLN(GPS->lon);
-      DBPRINT("Speed (knots): "); DBPRINTLN(GPS->speed);
-      DBPRINT("Angle: "); DBPRINTLN(GPS->angle);
-      DBPRINT("Altitude: "); DBPRINTLN(GPS->altitude);
-      DBPRINT("Satellites: "); DBPRINTLN((int)GPS->satellites);
 #endif
       // 1. convert lat & lon to BAMS
       long latBAMS = toBAMS(GPS->latitude, GPS->lat);
@@ -115,5 +111,6 @@
     }
     // 3. send position to the other
     Serial1.write(myState->getMessage(), MSG_LEN);
-    DBPRINT("Sending {");DBPRINT(myState->alarm);DBPRINT(",");DBPRINT(myState->lat);DBPRINT(",");DBPRINT(myState->lon);DBPRINTLN("}");
+    DBPRINT("send: ");DBPRINT(myState->alarm);DBPRINT(",");
+    DBPRINT(myState->lat);DBPRINT(",");DBPRINTLN(myState->lon);
   }

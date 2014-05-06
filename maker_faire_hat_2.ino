@@ -101,7 +101,7 @@ void receiveOtherStateTask()
     // TODO check the number of bytes read...
     Serial1.readBytes((char*)buff, MSG_LEN);
     otherState->update(buff);
-    DBPRINT("received: ");DBPRINT(otherState->alarm);DBPRINT(",");
+    DBPRINT("receive: ");DBPRINT(otherState->alarm);DBPRINT(",");
     DBPRINT(otherState->lat);DBPRINT(",");DBPRINTLN(otherState->lon);
     
     if (isOtherAlarmed && !otherState->isButtonFlagSet())
