@@ -23,16 +23,23 @@ byte Sector::calculate()
   a *= RAD2DEG;
 
   DBPRINTLN("Sector::calculate()");
-  DBPRINT("   azimuth to other: ");DBPRINTLN(a);
+  DBPRINT("   azimuth: ");DBPRINTLN(a);
+  DBPRINT("   heading: ");DBPRINTLN(myState->heading);
 
+  // rotate so North is 0 degrees and flip so west (CCW) is negative
   a = -(a - 90.0);
+
+  // The difference between the azimuth and our heading is the 
+  // line of bearing to the other device.
+  a = myState->heading - a;
   if (a < -180.0)
     a += 360.0;
   if (a > 180.0)
     a -= 360.0;
 
-  DBPRINT("   relative to my heading: ");DBPRINTLN(a);
+  DBPRINT("   bearing: ");DBPRINTLN(a);
 
+  // The sector is just a binning of the bearings.
   byte sctr = ERROR_SECTOR;
   if (a <= -90)
     sctr = 0;

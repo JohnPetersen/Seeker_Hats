@@ -19,7 +19,7 @@
 
 TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
 TimedAction actReceivePosition = TimedAction(1000, receiveOtherStateTask);
-TimedAction actHeading = TimedAction(250, headingTask);
+TimedAction actHeading = TimedAction(100, headingTask);
 
 Sector* sector;
 GPS_Wrapper* gpsSensor;
@@ -64,9 +64,10 @@ void setup()
 
 void loop() // run over and over again
 {
+  //DEBUG_PRINT("TIMING:LOOP");
   // read data from the GPS in the 'main loop'
   gpsSensor->processGps();
-  
+
   // check for button pushes
   if (buttonPushed) {
     DBPRINTLN("Button PUSH");
@@ -75,7 +76,6 @@ void loop() // run over and over again
       myState->setAckFlag(true);
     else
       myState->setButtonFlag(true);
-    
     buttonPushed = false;
   }
 
@@ -114,10 +114,6 @@ void receiveOtherStateTask()
 void headingTask()
 {
   compass->update();
-  // TODO update the lights.
-  // 1. calculate the other's sector based on our current and received positions.
-  
-  // 2. if this is a new quadrant update the lights.
   byte currSector = sector->getCurrent();
   if (currSector != ERROR_SECTOR)
     lights->setSector(currSector);
