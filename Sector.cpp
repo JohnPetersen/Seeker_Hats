@@ -19,19 +19,20 @@ byte Sector::calculate()
   int x = otherState->lon - myState->lon;
   int y = otherState->lat - myState->lat;
 
-  float a = atan2(x, y);
+  float a = atan2(y, x);
   a *= RAD2DEG;
+
+  // rotate so North is 0 degrees and flip so west (CCW) is negative
+  a = -(a - 90.0);
+  if (a < 0) a += 360.0;
 
   DBPRINTLN("Sector::calculate()");
   DBPRINT("   azimuth: ");DBPRINTLN(a);
   DBPRINT("   heading: ");DBPRINTLN(myState->heading);
 
-  // rotate so North is 0 degrees and flip so west (CCW) is negative
-  a = -(a - 90.0);
-
   // The difference between the azimuth and our heading is the 
   // line of bearing to the other device.
-  a = myState->heading - a;
+  a -= myState->heading;
   if (a < -180.0)
     a += 360.0;
   if (a > 180.0)
@@ -52,7 +53,7 @@ byte Sector::calculate()
   else if (a >= 90)
     sctr = 4;
 
-  DBPRINT("   calculated sector: ");DBPRINTLN(sctr);
+  DBPRINT("   sector : ");DBPRINTLN(sctr);
   return sctr;
 }
 

@@ -9,7 +9,9 @@
 #define PIN_LIGHTS 11
 #define SECTOR_COUNT 5
 
-#define SCAN_DELAY_MS 250
+#define SCAN_DELAY_MS 300
+
+#define CONNECTION_TIMEOUT_MS 6000
 
 class Lights
 {
@@ -29,7 +31,7 @@ class Lights
     unsigned long red;
     unsigned long green;
     unsigned long blue;
-    long scannerUpdateTime;
+    long nextUpdateTime;
 };
 
 #endif

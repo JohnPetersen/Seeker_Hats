@@ -45,6 +45,7 @@ boolean WorldState::update(byte buff[])
   alarm = buff[1];
   lat = getLong(buff + 2);
   lon = getLong(buff + 6);
+  lastUpdateTime = millis();
   return true;
 }
 

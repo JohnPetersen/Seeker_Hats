@@ -7,11 +7,11 @@ Lights::Lights(WorldState* ms, WorldState* os)
   sector = 99;
   sectorUpdated = false;
   strip = new Adafruit_NeoPixel(SECTOR_COUNT, PIN_LIGHTS, NEO_GRB + NEO_KHZ800);
-  currentColor = strip->Color(0,0,0);
   red = strip->Color(255,0,0);
   green = strip->Color(0,255,0);
   blue = strip->Color(0,0,255);
-  scannerUpdateTime = 0;
+  currentColor = 0;
+  nextUpdateTime = 0;
 }
 
 void Lights::begin(void)
@@ -38,6 +38,22 @@ void Lights::setSector(byte s)
 
 void Lights::update()
 {
+  // Blink if disconnected from the other device.
+  if (millis() - otherState->lastUpdateTime > CONNECTION_TIMEOUT_MS)
+  {
+    if (millis() > nextUpdateTime)
+    {
+      if (currentColor == 0)
+        currentColor = blue;
+      else
+        currentColor = 0;
+      for (short i = 0; i < SECTOR_COUNT; i++)
+        strip->setPixelColor(i, currentColor);
+      strip->show();
+      nextUpdateTime = millis() + SCAN_DELAY_MS;
+    }
+    return;
+  }
   // Choose color based on alarm states
   if (myState->isButtonFlagSet())
   {
@@ -75,7 +91,7 @@ void Lights::update()
       DBPRINT("LIGHT: ");DBPRINT(sector);DBPRINT("(fixed), ");DBPRINTLN(currentColor);
     }
   }
-  else if (millis() > scannerUpdateTime)
+  else if (millis() > nextUpdateTime)
   {
     DBPRINT("LIGHT: ");
     // Missing one or both fixes, display a larson scanner
@@ -95,7 +111,7 @@ void Lights::update()
     }
     sector++;
     DBPRINT(", ");DBPRINTLN(currentColor);
-    scannerUpdateTime = millis() + SCAN_DELAY_MS;
+    nextUpdateTime = millis() + SCAN_DELAY_MS;
   }
 }
 
