@@ -8,7 +8,7 @@
 class Compass
 {
   public:
-    Compass(WorldState* ms);
+    Compass(WorldState* ms, float minMagCal[], float maxMagCal[]);
     void begin(void);
     void update(void);
   private:

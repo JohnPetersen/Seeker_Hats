@@ -1,17 +1,19 @@
 #include "Compass.h"
 
-Compass::Compass(WorldState* ms)
+Compass::Compass(WorldState* ms, float minMagCal[], float maxMagCal[])
 {
   myState = ms;
   compass = new Adafruit_LSM303();
-  
-  // TODO set actual compass callibration values depending on the device.
-  calMin.x = 0.0;
-  calMin.y = 0.0;
-  calMin.z = 0.0;
-  calMax.x = 0.0;
-  calMax.y = 0.0;
-  calMax.z = 0.0;
+
+  calMin.x = minMagCal[0];
+  calMin.y = minMagCal[1];
+  calMin.z = minMagCal[2];
+  calMax.x = maxMagCal[0];
+  calMax.y = maxMagCal[1];
+  calMax.z = maxMagCal[2];
+
+  DBPRINT("Compass cal min: ");DBPRINT(calMin.x);DBPRINT(",");DBPRINT(calMin.y);DBPRINT(",");DBPRINT(calMin.z);
+  DBPRINT("\n            max: ");DBPRINT(calMax.x);DBPRINT(",");DBPRINT(calMax.y);DBPRINT(",");DBPRINTLN(calMax.z);
 }
 
 void Compass::begin()

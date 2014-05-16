@@ -1,5 +1,6 @@
 
 #include <Wire.h>
+#include <EEPROM.h>
 #include <TimedAction.h>
 
 #include <Adafruit_GPS.h>
@@ -16,6 +17,8 @@
 
 #define BUTTON_INTERRUPT 4
 #define DEBOUNCE_TIME 500
+
+#define BASE_CAL_ADDR 0
 
 TimedAction actUpdatePosition = TimedAction(2000, positionUpdateTask);
 TimedAction actReceivePosition = TimedAction(1000, receiveOtherStateTask);
@@ -45,8 +48,19 @@ void setup()
   gpsSensor = new GPS_Wrapper(myState);
   gpsSensor->begin();
   
+  float minMag[] = {
+    readFloat(BASE_CAL_ADDR + 0),
+    readFloat(BASE_CAL_ADDR + 4),
+    readFloat(BASE_CAL_ADDR + 8)
+  };
+  float maxMag[] = {
+    readFloat(BASE_CAL_ADDR + 12),
+    readFloat(BASE_CAL_ADDR + 16),
+    readFloat(BASE_CAL_ADDR + 20)
+  };
+
   DBPRINTLN("Init Compass...");
-  compass = new Compass(myState);
+  compass = new Compass(myState, minMag, maxMag);
   compass->begin();
   
   DBPRINTLN("Init Lights...");
@@ -124,4 +138,12 @@ void buttonHandler() {
     buttonPushed = true;
     nextPushAllowedTime = millis() + DEBOUNCE_TIME;
   }
+}
+
+float readFloat(int address) {
+  float value = 0.0;
+  byte* p = (byte*)(void*)&value;
+  for (int i = 0; i < sizeof(value); i++)
+      *p++ = EEPROM.read(address++);
+  return value;
 }
