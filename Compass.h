@@ -5,6 +5,8 @@
 #include <Adafruit_LSM303.h>
 #include "WorldState.h"
 
+#define RAD2DEG 57.2957795
+
 class Compass
 {
   public:

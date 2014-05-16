@@ -55,7 +55,7 @@
       if (!GPS->parse(GPS->lastNMEA())) // this also sets the newNMEAreceived() flag to false
       {
         DBPRINT("Failed to parse: ");
-        DBPRINT(GPS->lastNMEA());
+        DBPRINTLN(GPS->lastNMEA());
       }
     }
   }

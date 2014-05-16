@@ -89,7 +89,9 @@ float Compass::getHeading()
   vector_normalize(&N);
 
   // compute heading
-  float heading = atan2(vector_dot(&E, &from), vector_dot(&N, &from)) * 180 / M_PI;
+  float heading = atan2(vector_dot(&E, &from), vector_dot(&N, &from)) * RAD2DEG;
+  // correcting for mounting direction
+  heading -= 90.0;
   if (heading < 0) heading += 360;
   return heading;
 }
