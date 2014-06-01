@@ -10,6 +10,7 @@ For the 2013 Maker Faire I built a blinky light hat for my son to wear. It used 
 
 ## Parts Used
 Each hat contains the following parts:
+
 - [Spark Fun Fio v3](https://www.sparkfun.com/products/11520)
 - [xBee Pro S1](https://www.sparkfun.com/products/8742)
 - [Adafruit Ultimate GPS](https://www.adafruit.com/products/746)
@@ -37,10 +38,11 @@ TODO: Add class descriptions and sequence diagram
 #### Simulator
 Processing was used to simulate a second hat durring developments. This enabled the verification of the communications and algorithm implemenations.
 
-TODO: Add simulator screen shot
+![Simulator Screenshot](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/68e54a224030066dfd5020993dae6c234a010a0e/docs/img/simulator.png?token=a825592bc86d05b309f373c2e93663daad61de02)
 
 #### Dependencies
 The following libraries are used:
+
 - [Adafruit_GPS](https://github.com/adafruit/Adafruit-GPS-Library)
 - [Adafruit_LSM303](https://github.com/adafruit/Adafruit_LSM303)
 - [Adafruit_NeoPixel](https://github.com/adafruit/Adafruit_NeoPixel)
