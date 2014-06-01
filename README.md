@@ -78,6 +78,6 @@ Issues with the current version:
 ## Future Work
 Improvement ideas for the next version:
 
-- Mesh network with more than two devices.
-- Create a held device that uses an [Adafruit NeoPixel Ring](https://www.adafruit.com/products/1586) to point to the hats.
+- Use a mesh network to allow more than two devices to participate. The hats could point to the nearest device.
+- Create a handheld device that uses an [Adafruit NeoPixel Ring](https://www.adafruit.com/products/1586) to point to the hats.
 - Fix the alert button.
