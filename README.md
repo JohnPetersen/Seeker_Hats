@@ -1,11 +1,11 @@
 # Seeker Hats 
 
-## What are Seeker Hats
-A pair of hats that point to each other. Allow the wearers of the hats to find one another.
+## What are Seeker Hats?
+Seeker hats are a pair of hats that can tell the wearer the direction of the other hat. This allows the wearers of the hats to find one another.
 
 ![Overview](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/5520141078cb5e3dc5fb93ac7c405d0d74db730b/docs/img/overview.jpg?token=b8806103bb5f1941b55f3393889787d5b4f4b215)
 
-The hats use an array of LEDs to indicate the direction of the other hat.
+The hats use an array of LEDs mounted under the brim to indicate the direction of the other hat.
 
 ![LED Array](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/5520141078cb5e3dc5fb93ac7c405d0d74db730b/docs/img/lights.jpg?token=1eebe323201e67fadb03b4c54fccc2ee30e8dfc6)
 
@@ -41,6 +41,15 @@ Each hat contains the following parts:
 
 TODO: Add class descriptions and sequence diagram
 
+#### Structure
+The software uses the Arduino .ino file standard for the setup() and loop() functions. The majority of the functionality is provided by classes instantiated in the setup() method and used during the loop() calls.
+
+- Compass: Wraps the basic Adafruit_LSM303 functionality and provides a tilt corrected heading.
+- GPS_Wrapper: Wraps the Adafruit_GPS library with logic to convert the string representation to [BAMS](http://en.wikipedia.org/wiki/Binary_Angular_Measurement_System#Binary_angles), update the local state, and send the location to the other hat.
+- Lights: Wraps the Adafruit_NeoPixel library and decides how to illuminate the lights based on the states of the two hats.
+- WorldState: A structure to hold the state of a hat. Encapsulates the logic for serializing a state to and from a byte array for transmitting and receiving.
+- Sector: Utility class for calculating which sector the other hat is in.
+
 #### Simulator
 Processing was used to simulate a second hat durring developments. This enabled the verification of the communications and algorithm implemenations.
 
@@ -63,7 +72,7 @@ Issues with the current version:
 - My son would turn off his hat.
 - Only two people can participate.
 - Brim of hat not the easist to see.
-- A button was originally part of the system. The button was designed to allow for signalling between the two devices. The design prototype worked hsowever in the final build pressing the button caused the device to reset so the button was removed. 
+- A button was originally part of the system. The button was designed to allow for signaling between the two devices. The design prototype worked hsowever in the final build pressing the button caused the device to reset so the button was removed. 
 - The GPS module has a built-in logging capability, but code to activate it froze the program.
 
 ## Future Work
