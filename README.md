@@ -3,11 +3,11 @@
 ## What are Seeker Hats?
 Seeker hats are a pair of hats that can tell the wearer the direction of the other hat. This allows the wearers of the hats to find one another.
 
-![Overview](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/5520141078cb5e3dc5fb93ac7c405d0d74db730b/docs/img/overview.jpg?token=b8806103bb5f1941b55f3393889787d5b4f4b215)
+![Overview](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/overview.jpg)
 
 The hats use an array of LEDs mounted under the brim to indicate the direction of the other hat.
 
-![LED Array](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/5520141078cb5e3dc5fb93ac7c405d0d74db730b/docs/img/lights.jpg?token=1eebe323201e67fadb03b4c54fccc2ee30e8dfc6)
+![LED Array](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/lights.jpg)
 
 ## Motivation
 For the 2013 Maker Faire I built a blinky light hat for my son to wear. It used a Flora, a LSM303 compass and eight WS2812 LEDs. Rather than making a hat with more LEDs for 2014 I decided to make something useful. Based on our differing interests I thought a pair of hats that would let us separate yet give us the ability to locate each other quickly would be useful.
@@ -30,7 +30,7 @@ Each hat contains the following parts:
 4. The Fio computes the azimuth to the other hat and the difference from its heading.
 5. The Neopixel in the direction of the other hat is illuminated.
 
-![Hardware Detail](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/5520141078cb5e3dc5fb93ac7c405d0d74db730b/docs/img/detail.png?token=4874b91765271898af9626ac38e6b2e9b0862c97)
+![Hardware Detail](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/detail.png)
 
 ### Software
 1. The GPS receiver is queried every two seconds to get the current position.
@@ -53,7 +53,7 @@ The software uses the Arduino .ino file standard for the setup() and loop() func
 #### Simulator
 Processing was used to simulate a second hat durring developments. This enabled the verification of the communications and algorithm implemenations.
 
-![Simulator Screenshot](https://bytebucket.org/johnpetersen/maker_faire_hat_2/raw/68e54a224030066dfd5020993dae6c234a010a0e/docs/img/simulator.png?token=a825592bc86d05b309f373c2e93663daad61de02)
+![Simulator Screenshot](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/simulator.png)
 
 #### Dependencies
 The following libraries are used:
