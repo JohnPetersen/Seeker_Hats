@@ -53,6 +53,7 @@ The following libraries are used:
 
 ## Problems
 Issues with the current version:
+
 - My son would turn off his hat.
 - Only two people can participate.
 - Brim of hat not the easist to see.
@@ -61,6 +62,7 @@ Issues with the current version:
 
 ## Future Work
 Improvement ideas for the next version:
+
 - Mesh network with more than two devices.
 - Create a held device that uses an [Adafruit NeoPixel Ring](https://www.adafruit.com/products/1586) to point to the hats.
 - Fix the alert button.
