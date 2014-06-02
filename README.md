@@ -51,7 +51,7 @@ The software uses the Arduino .ino file standard for the setup() and loop() func
 - Sector: Utility class for calculating which sector the other hat is in.
 
 #### Simulator
-Processing was used to simulate a second hat durring developments. This enabled the verification of the communications and algorithm implemenations.
+Processing was used to simulate a second hat during developments. This enabled the verification of the communications and algorithm implementations.
 
 ![Simulator Screenshot](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/simulator.png)
 
@@ -71,8 +71,8 @@ Issues with the current version:
 
 - My son would turn off his hat.
 - Only two people can participate.
-- Brim of hat not the easist to see.
-- A button was originally part of the system. The button was designed to allow for signaling between the two devices. The design prototype worked hsowever in the final build pressing the button caused the device to reset so the button was removed. 
+- Brim of hat not the easiest to see.
+- A button was originally part of the system. The button was designed to allow for signaling between the two devices. The design prototype worked however in the final build pressing the button caused the device to reset so the button was removed. 
 - The GPS module has a built-in logging capability, but code to activate it froze the program.
 
 ## Future Work
