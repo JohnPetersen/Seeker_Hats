@@ -51,7 +51,7 @@ The software uses the Arduino .ino file standard for the setup() and loop() func
 - Sector: Utility class for calculating which sector the other hat is in.
 
 #### Simulator
-Processing was used to simulate a second hat during developments. This enabled the verification of the communications and algorithm implementations.
+Processing was used to simulate a second hat during development. This enabled the verification of the communications and algorithm implementations. The simulator can be found in [this repository](https://github.com/JohnPetersen/Seeker_Hat_Simulator).
 
 ![Simulator Screenshot](https://raw.githubusercontent.com/JohnPetersen/Seeker_Hats/master/docs/img/simulator.png)
 
