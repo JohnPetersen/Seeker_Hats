@@ -81,3 +81,7 @@ Improvement ideas for the next version:
 - Use a mesh network to allow more than two devices to participate. The hats could point to the nearest device.
 - Create a handheld device that uses an [Adafruit NeoPixel Ring](https://www.adafruit.com/products/1586) to point to the hats.
 - Fix the alert button.
+
+## Links
+[Hackaday](https://hackaday.com/2014/06/18/seeker-hats-find-each-other-with-directional-leds/)
+
